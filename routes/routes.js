@@ -11,7 +11,7 @@ router.get('/home', function (req, res) {
 router.post('/submit_form', function (req, res) {
 
     console.log(req.body)
-    console.log(req.body.name)
+    console.log(req.body.firstname)
     var data = req.body;
 
     // pdfFillForm.write('./contracts/contract.pdf', data, {
