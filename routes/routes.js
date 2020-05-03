@@ -12,7 +12,7 @@ router.post('/submit_form', function (req, res) {
 
     console.log(req.body)
 
-    var data = req.body
+    var data = req.body;
 
     // pdfFillForm.write('./contracts/test.pdf', data, {
     //         "save": "pdf",
