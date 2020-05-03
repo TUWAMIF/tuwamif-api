@@ -3,11 +3,10 @@ const bodyparser = require('body-parser');
 var path = require('path');
 const cors = require('cors');
 const app = express();
-app.use(express.urlencoded())
 
-app.use(bodyparser.json({
-    limit: '50mb'
-}));
+//app.use(express.urlencoded())
+
+app.use(bodyparser.json());
 
 //acces-control-origin-header
 app.use(cors());
