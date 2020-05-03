@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 var indexRoute = require('./routes/routes.js');
 
 // Routes registration
-app.use('/api/', indexRoute);
+app.use('/api', indexRoute);
 
 // Local connection
 var x = app.listen(3000, () => {
