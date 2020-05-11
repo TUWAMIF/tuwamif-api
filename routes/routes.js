@@ -1,8 +1,9 @@
 const express = require('express');
+var smtpTransport = require('nodemailer-smtp-transport');
 const router = express.Router();
 var pdfFillForm = require('pdf-fill-form');
 var nodemailer = require('nodemailer');
-
+var fs = require('fs');
 router.get('/home', function (req, res) {
 
     res.status(200).send('succesfully working')
@@ -12,14 +13,17 @@ router.post('/submit_form', function (req, res) {
 
     console.log(req.body)
     console.log(req.body.firstname)
-    var data = req.body;
+    var data = { "firstname": req.body.firstname }
 
-    pdfFillForm.write('./contracts/contract.pdf', data, {
-            "save": "pdf",
-            'cores': 4,
-            'scale': 0.2,
-            'antialias': true
-        })
+
+
+    
+    pdfFillForm.write('./contracts/contract1.pdf', data, {
+        "save": "pdf",
+        'cores': 4,
+        'scale': 0.2,
+        'antialias': true
+    })
         .then(function (result) {
             fs.writeFile("ready.pdf", result, function (err) {
                 if (err) {
@@ -28,17 +32,18 @@ router.post('/submit_form', function (req, res) {
                 console.log("The file was saved!");
 
                 var receiver = 'josephmichaeltest@gmail.com'
-                var name = 'Joseph miachel'
+                var name = 'Adam Beleko'
                 var message = `<h2>CONTRACT FORM SUBMISSION</h2>`
 
 
-                var transporter = nodemailer.createTransport({
+                var transporter = nodemailer.createTransport(smtpTransport({
                     service: 'gmail',
+                    host: 'smtp.gmail.com',
                     auth: {
                         user: 'josephkwagilwa@gmail.com',
                         pass: '19041995'
                     }
-                });
+                }));
 
                 var mailOptions = {
                     from: name,
@@ -47,7 +52,7 @@ router.post('/submit_form', function (req, res) {
                     html: message,
                     attachments: { // file on disk as an attachment
                         filename: 'contract.pdf',
-                        path: __dirname + '/result.pdf'
+                        path: './ready.pdf'
                         // stream this file
                     }
                 };
