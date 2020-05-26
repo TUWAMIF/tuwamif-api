@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 var path = require('path');
-var cors = require('cors');
+const cors = require('cors');
 const app = express();
+const mongoose = require('mongoose');
 
 //app.use(express.urlencoded())
 
@@ -10,6 +11,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+//Data Base Connection
+mongoose.connect("mongodb://172.17.0.1:27017/tuwamif", {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+});
+
+mongoose.connection.on('connected', () => {
+    console.log('Database connected');
+});
+
+mongoose.connection.on('error', (err) => {
+
+    console.log(err.name);
+});
 
 //acces-control-origin-header
 app.use(cors());
