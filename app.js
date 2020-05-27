@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Data Base Connection
-mongoose.connect("mongodb://172.17.0.1:27017/tuwamif", {
+mongoose.connect("mongodb://192.168.0.100:27017/tuwamif", {
     useNewUrlParser: true,
     useCreateIndex: true,
 });

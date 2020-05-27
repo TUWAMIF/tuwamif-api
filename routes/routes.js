@@ -3,13 +3,12 @@ const router = express.Router();
 const moment = require('moment');
 const converter = require('number-to-words');
 
-var smtpTransport = require('nodemailer-smtp-transport');
-var pdfFillForm = require('pdf-fill-form');
-var nodemailer = require('nodemailer');
-var fs = require('fs');
+const pdfFillForm = require('pdf-fill-form');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 
-var Contract = require('../models/contract');
+const ContractModel = require('../models/contract');
 
 
 
@@ -28,23 +27,12 @@ router.post('/submit_form', function (req, res) {
 
     var startdate = req.body.start_date
 
-    start_month = moment(startdate).format('MMMM');
-    start_year = moment(startdate).format('YYYY');
-    ending_month = moment(startdate).add(10, 'months').format('MMMM');
-    ending_year = moment(startdate).add(10, 'months').format('YYYY');
-
-
-    console.log("MOMENTO    " + moment(startdate).format('MMMM'));
-
     var months = Number(req.body.end_date); //months of contribution
 
-    console.log("AFTRE MOMENTO  " + moment(startdate).add(months, 'months').format("MMM Do YY"));
-
-    console.log("WORDS:::::::::" + converter.toWords(req.body.contribution_amount));
-    console.log(req.body)
-    console.log(req.body.firstname)
-    console.log(req.body.hr_phone)
-
+    var start_month = moment(startdate).format('MMMM');
+    var start_year = moment(startdate).format('YYYY');
+    var ending_month = moment(startdate).add(months, 'months').format('MMMM');
+    var ending_year = moment(startdate).add(months, 'months').format('YYYY');
 
     var data;
     var gender_pronoun;
@@ -55,10 +43,16 @@ router.post('/submit_form', function (req, res) {
     var block_figure_group;
     var block_figure_company;
 
+    var newContract = new ContractModel(req.body);
 
-    // Contract.save(req.body, (err, res) => {
+    newContract.save((err, res) => {
+        if (!err) {
+            console.log("Contract saved to the database succesfully");
+        } else {
+            console.log("Something Went Wrong::::::" + err)
+        }
 
-    // })
+    })
 
     if (req.body.gender === "male") {
         gender_pronoun = "his"
