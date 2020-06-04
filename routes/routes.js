@@ -6,9 +6,15 @@ const converter = require('number-to-words');
 const pdfFillForm = require('pdf-fill-form');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+let {
+    PythonShell
+} = require('python-shell')
+
 
 
 const ContractModel = require('../models/contract');
+const EmpolyeeModel = require('../models/employee');
+
 
 
 
@@ -42,6 +48,12 @@ router.post('/submit_form', function (req, res) {
     var percentage_group;
     var block_figure_group;
     var block_figure_company;
+    var tuwamif_employee_name;
+    var tuwamif_employee_designation;
+    var tuwamif_employee_email;
+    var tuwamif_employee_address;
+
+
 
     var newContract = new ContractModel(req.body);
 
@@ -49,10 +61,25 @@ router.post('/submit_form', function (req, res) {
         if (!err) {
             console.log("Contract saved to the database succesfully");
         } else {
-            console.log("Something Went Wrong::::::" + err)
+            return console.log("Something Went Wrong::::::" + err)
         }
 
     })
+
+    EmpolyeeModel.find({ employee_reference_id: req.body.referrer_id }, function (err, res) {
+
+        if (!err) {
+            tuwamif_employee_name = res.employee_name;
+            tuwamif_employee_designation = res.employee_designation;
+            tuwamif_employee_email = res.employee_email;
+            tuwamif_employee_address = res.employee_address;
+        } else {
+
+            return console.log("SOMETHING WENT WRONG::::" + err)
+        }
+
+    })
+
 
     if (req.body.gender === "male") {
         gender_pronoun = "his"
@@ -158,6 +185,14 @@ router.post('/submit_form', function (req, res) {
             "beneficiary_project_district": "" || "null",
             "beneficiary_project_village": "" || "null",
             "beneficiary_project_telephone": "",
+            "tuwamif_employee_name": tuwamif_employee_name,
+            "tuwamif_employee_designation": tuwamif_employee_designation,
+            "tuwamif_employee_email": tuwamif_employee_email,
+            "tuwamif_employee_address": tuwamif_employee_address,
+            "contributor_name": req.body.firstname + " " + req.body.middlename + " " + req.body.lastname,
+            "contributor_designation": "",
+            "contributor_email_address": req.body.email,
+            "contributor_postal_address": req.body.postal_address,
         }
     }
 
@@ -237,7 +272,15 @@ router.post('/submit_form', function (req, res) {
             "beneficiary3_region": req.body.beneficiary_region_3 || "null",
             "beneficiary3_district": req.body.beneficiary_district_3 || "null",
             "beneficiary3_village": req.body.beneficiary_village_3 || "null",
-            "beneficiary3_telephone": req.body.beneficiary_phone_3 || "null"
+            "beneficiary3_telephone": req.body.beneficiary_phone_3 || "null",
+            "tuwamif_employee_name": tuwamif_employee_name,
+            "tuwamif_employee_designation": tuwamif_employee_designation,
+            "tuwamif_employee_email": tuwamif_employee_email,
+            "tuwamif_employee_address": tuwamif_employee_address,
+            "contributor_name": req.body.firstname + " " + req.body.middlename + " " + req.body.lastname,
+            "contributor_designation": "",
+            "contributor_email_address": req.body.email,
+            "contributor_postal_address": req.body.postal_address,
 
 
         }
@@ -316,7 +359,15 @@ router.post('/submit_form', function (req, res) {
             "contribution_amount": req.body.contribution_amount || "null",
             "receiver_relation_to_contributor": "" || "null",
             "beneficiary_gender": "" || "null",
-            "beneficiary_address": ""
+            "beneficiary_address": "",
+            "tuwamif_employee_name": tuwamif_employee_name,
+            "tuwamif_employee_designation": tuwamif_employee_designation,
+            "tuwamif_employee_email": tuwamif_employee_email,
+            "tuwamif_employee_address": tuwamif_employee_address,
+            "contributor_name": req.body.firstname + " " + req.body.middlename + " " + req.body.lastname,
+            "contributor_designation": "",
+            "contributor_email_address": req.body.email,
+            "contributor_postal_address": req.body.postal_address,
 
 
         }
@@ -373,7 +424,15 @@ router.post('/submit_form', function (req, res) {
             "amount_individual": "",
             "block_figure_group": block_figure_group || "",
             "percentage_group": percentage_group || "",
-            "amount_group": ""
+            "amount_group": "",
+            "tuwamif_employee_name": tuwamif_employee_name,
+            "tuwamif_employee_designation": tuwamif_employee_designation,
+            "tuwamif_employee_email": tuwamif_employee_email,
+            "tuwamif_employee_address": tuwamif_employee_address,
+            "contributor_name": req.body.firstname + " " + req.body.middlename + " " + req.body.lastname,
+            "contributor_designation": "",
+            "contributor_email_address": req.body.email,
+            "contributor_postal_address": req.body.postal_address,
         }
 
 
@@ -386,10 +445,40 @@ router.post('/submit_form', function (req, res) {
         'antialias': true
     })
         .then(function (result) {
-            fs.writeFile("ready.pdf", result, function (err) {
+            fs.writeFile(contract, result, function (err) {
                 if (err) {
                     return console.log(err);
                 }
+
+                // PythonShell.run('./python_process/code.py', { pythonPath: 'python3.8' }, function (err) {
+                //     if (err) throw err;
+                //     console.log('finished putting signature');
+                // });
+
+                let pythonShell = new PythonShell('./python_process/code.py', { pythonPath: 'python3.8' })
+                
+                var data = {
+                    contract: contract,
+                    signature_path: "my signature"
+
+                }
+
+                pythonShell.send(JSON.stringify(data));
+
+                pythonShell.on('message', function (message) {
+                    // received a message sent from the Python script (a simple "print" statement)
+                    console.log(message);
+                });
+
+                // end the input stream and allow the process to exit
+                pythonShell.end(function (err, code, signal) {
+                    if (err) throw err;
+                    console.log('The exit code was: ' + code);
+                    console.log('The exit signal was: ' + signal);
+                    console.log('finished');
+                });
+
+
                 console.log("The file was saved!");
 
                 var receiver = 'josephmichaeltest@gmail.com'
@@ -444,7 +533,7 @@ router.post('/submit_form', function (req, res) {
                     html: message,
                     attachments: { // file on disk as an attachment
                         filename: 'contract.pdf',
-                        path: './ready.pdf'
+                        path: `./${contract}`
                         // stream this file
                     }
                 };
@@ -454,7 +543,13 @@ router.post('/submit_form', function (req, res) {
                         console.log(error);
                     } else {
                         console.log('Email sent: ' + info.response);
-
+                        fs.unlink(`./${contract}`, (err) => {
+                            if (err) {
+                                console.error(err)
+                                return
+                            }
+                            console.log('file Removed')
+                        })
                     }
                 });
 
@@ -464,6 +559,23 @@ router.post('/submit_form', function (req, res) {
             console.log(err);
         });
 
+
+})
+
+router.post('/employee', function (err, res) {
+
+    var data = {
+        employee_name: "",
+        employee_reference_id: "",
+        employee_designation: "",
+        employee_email: "",
+        employee_address: ""
+    }
+
+    var employeemodel = new EmpolyeeModel(data);
+    employeemodel.save(function (err, res) {
+        console.log(res)
+    })
 
 })
 
