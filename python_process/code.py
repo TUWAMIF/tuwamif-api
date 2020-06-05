@@ -14,6 +14,8 @@ data = json.loads(lines[0])
 
 
 contract = data["contract"]
+signature_path = data["signature_path"]
+print()
 
 # open the PDF
 doc = fitz.open("./"+contract)
@@ -46,7 +48,7 @@ m = fitz.Matrix(1, 1, 1, 1, x, y)
 rect.transform(m)
 
 # 80
-doc[p].insertImage(rect, filename="./python_process/abdon_maganga.png")
+doc[p].insertImage(rect, filename="./"+signature_path)
 
 # for page in doc:
 #     if page == "page 4 of TUWAMIF_AND_EMPLOYEE_ON_FIXED_DEPOSIT_ALLOWANCE.pdf" :

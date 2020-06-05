@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const converter = require('number-to-words');
+const multer = require('multer');
+const path = require('path');
 
 const pdfFillForm = require('pdf-fill-form');
 const nodemailer = require('nodemailer');
@@ -23,7 +25,7 @@ router.get('/home', function (req, res) {
     res.status(200).send('succesfully working')
 });
 
-router.post('/submit_form', function (req, res) {
+router.post('/submit_form', async (req, res) => {
 
     var day = moment().format('Do');
 
@@ -52,6 +54,7 @@ router.post('/submit_form', function (req, res) {
     var tuwamif_employee_designation;
     var tuwamif_employee_email;
     var tuwamif_employee_address;
+    var signature_path;
 
 
 
@@ -66,20 +69,18 @@ router.post('/submit_form', function (req, res) {
 
     })
 
-    EmpolyeeModel.find({ employee_reference_id: req.body.referrer_id }, function (err, res) {
 
-        if (!err) {
-            tuwamif_employee_name = res.employee_name;
-            tuwamif_employee_designation = res.employee_designation;
-            tuwamif_employee_email = res.employee_email;
-            tuwamif_employee_address = res.employee_address;
-        } else {
+    try {
+        var ress = await EmpolyeeModel.findEmployee(req.body.referrer_id)
 
-            return console.log("SOMETHING WENT WRONG::::" + err)
-        }
-
-    })
-
+        tuwamif_employee_name = ress[0].employee_name;
+        tuwamif_employee_designation = ress[0].employee_designation + " " + ress[0].location;
+        tuwamif_employee_email = ress[0].employee_email;
+        tuwamif_employee_address = ress[0].employee_address;
+        signature_path = ress[0].signature_path;
+    } catch (e) {
+        console.log(e)
+    }
 
     if (req.body.gender === "male") {
         gender_pronoun = "his"
@@ -456,14 +457,13 @@ router.post('/submit_form', function (req, res) {
                 // });
 
                 let pythonShell = new PythonShell('./python_process/code.py', { pythonPath: 'python3.8' })
-                
-                var data = {
-                    contract: contract,
-                    signature_path: "my signature"
 
+                var datas = {
+                    contract: contract,
+                    signature_path: signature_path
                 }
 
-                pythonShell.send(JSON.stringify(data));
+                pythonShell.send(JSON.stringify(datas));
 
                 pythonShell.on('message', function (message) {
                     // received a message sent from the Python script (a simple "print" statement)
@@ -562,19 +562,44 @@ router.post('/submit_form', function (req, res) {
 
 })
 
-router.post('/employee', function (err, res) {
+
+
+
+//multer storage engine
+const storage = multer.diskStorage({
+    destination: './public/uploads/',
+    filename: function (req, file, callback) {
+        callback(null, file.originalname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+//Initialize upload
+const upload = multer({
+    storage: storage,
+
+})
+
+router.post('/employee', upload.single('fileimage'), function (req, res) {
 
     var data = {
-        employee_name: "",
-        employee_reference_id: "",
-        employee_designation: "",
-        employee_email: "",
-        employee_address: ""
+        employee_name: req.body.name,
+        employee_id_number: req.body.id_number,
+        employee_designation: req.body.designation,
+        employee_email: req.body.email,
+        employee_address: req.body.address,
+        location: req.body.location,
+        signature_path: req.file.path
     }
 
     var employeemodel = new EmpolyeeModel(data);
-    employeemodel.save(function (err, res) {
-        console.log(res)
+    employeemodel.save(function (err, ress) {
+        if (err) {
+            res.status(400).send(err.message)
+            return console.log(err.message)
+        }
+
+        console.log(ress)
+        res.status(200).send("succuesfully")
     })
 
 })

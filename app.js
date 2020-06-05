@@ -4,6 +4,7 @@ var path = require('path');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
+const mongooseValidationErrorTransform = require('mongoose-validation-error-transform');
 
 //app.use(express.urlencoded())
 
@@ -13,10 +14,19 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Data Base Connection
-mongoose.connect("mongodb://192.168.0.100:27017/tuwamif", {
+// mongoose.connect("mongodb://192.168.0.100:27017/tuwamif", {
+//     useNewUrlParser: true,
+//     useCreateIndex: true,
+//     useUnifiedTopology: true
+// });
+
+
+mongoose.connect("mongodb+srv://Joseph:PqLr29pmJHCxJru@cluster0-bzlr9.mongodb.net/tuwamif?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useCreateIndex: true,
+    useUnifiedTopology: true
 });
+
 
 mongoose.connection.on('connected', () => {
     console.log('Database connected');
@@ -25,6 +35,31 @@ mongoose.connection.on('connected', () => {
 mongoose.connection.on('error', (err) => {
 
     console.log(err.name);
+});
+
+//Mongoose Validation error formating
+mongoose.plugin(mongooseValidationErrorTransform, {
+
+    //
+    // these are the default options you can override
+    // (you don't need to specify this object otherwise)
+    //
+
+    // should we capitalize the first letter of the message?
+    capitalize: true,
+
+    // should we convert `full_name` => `Full name`?
+    humanize: true,
+
+    // how should we join together multiple validation errors?
+    transform: function (messages) {
+        return messages.join(',   ');
+    }
+    // transform: function (messages) {
+    //     if (messages.length === 1) return messages[0];
+    //     return `<ul><li>${messages.join('</li><li>')}</li></ul>`;
+    // }
+
 });
 
 //acces-control-origin-header
