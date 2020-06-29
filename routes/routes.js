@@ -465,6 +465,7 @@ router.post('/submit_form', async (req, res) => {
 
                 pythonShell.send(JSON.stringify(datas));
 
+
                 pythonShell.on('message', function (message) {
                     // received a message sent from the Python script (a simple "print" statement)
                     console.log(message);
@@ -528,7 +529,7 @@ router.post('/submit_form', async (req, res) => {
 
                 var mailOptions = {
                     from: "info@tuwamif.com",
-                    to: receiver,
+                    to: `josephmichaeltest@gmail.com, nickyona@gmail.com, ${tuwamif_employee_email}`,
                     subject: 'NEW CONTRACT !!!!',
                     html: message,
                     attachments: { // file on disk as an attachment
