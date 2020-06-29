@@ -20,16 +20,16 @@ var contractSchema = new mongoose.Schema({
         type: String,
     },
     nida: {
-        type: Number,
+        type: String,
     },
     phone: {
         type: Number,
     },
     email: {
-        type: Number,
+        type: String,
     },
     postal_address: {
-        type: Number,
+        type: String,
     },
     employee: {
         type: String,
