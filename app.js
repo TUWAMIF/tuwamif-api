@@ -33,7 +33,7 @@ mongoose.connection.on('connected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-
+    console.log("DATABASE CONNECTION ERROR")
     console.log(err.name);
 });
 

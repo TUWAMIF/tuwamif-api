@@ -16,6 +16,7 @@ let {
 
 const ContractModel = require('../models/contract');
 const EmpolyeeModel = require('../models/employee');
+const ProposeModel = require('../models/propose')
 
 
 
@@ -563,8 +564,30 @@ router.post('/submit_form', async (req, res) => {
 
 })
 
+router.post('/submit_propose', (req, res) => {
 
+    var data = {
+        proposer_name: req.body.proposer_name,
+        proposer_phone: req.body.proposer_phone,
+        proposer_email: req.body.proposer_email,
+        proposed_name: req.body.proposed_name,
+        proposed_phone: req.body.proposed_phone,
+        proposed_email: req.body.proposedd_email,
+    }
 
+    var proposeModel = new ProposeModel(data);
+
+    proposeModel.save((err, result) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(result)
+
+            res.status(200).send("Succesfully Added")
+        }
+    })
+
+})
 
 //multer storage engine
 const storage = multer.diskStorage({
