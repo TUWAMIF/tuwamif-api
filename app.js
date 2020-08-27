@@ -13,19 +13,19 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// Data Base Connection
-mongoose.connect("mongodb://192.168.43.238:27017", {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-});
-
-
-// mongoose.connect("mongodb+srv://Joseph:PqLr29pmJHCxJru@cluster0-bzlr9.mongodb.net/tuwamif?retryWrites=true&w=majority", {
+// // Data Base Connection
+// mongoose.connect("mongodb://192.168.43.238:27017", {
 //     useNewUrlParser: true,
 //     useCreateIndex: true,
 //     useUnifiedTopology: true
 // });
+
+
+mongoose.connect("mongodb+srv://Joseph:PqLr29pmJHCxJru@cluster0-bzlr9.mongodb.net/tuwamif?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
 
 
 mongoose.connection.on('connected', () => {
