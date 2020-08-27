@@ -1,29 +1,37 @@
 var mongoose = require("mongoose");
+var EmpolyeeModel = require('./employee');
 
 var contractSchema = new mongoose.Schema({
     scheme: {
         type: String,
+        required: [true, "Scheme type required"]
     },
     firstname: {
         type: String,
+        required: [true, "First name is required"]
     },
     middlename: {
         type: String,
+        required: [true, "Middle name is required"]
     },
     lastname: {
         type: String,
+        required: [true, "Last name is required"]
     },
     gender: {
         type: String,
+
     },
     title: {
         type: String,
     },
     nida: {
         type: String,
+        required: [true, "Nida ID is required"]
     },
     phone: {
         type: Number,
+
     },
     email: {
         type: String,
@@ -43,7 +51,7 @@ var contractSchema = new mongoose.Schema({
     organization: {
         type: String,
     },
-    department_name: {
+    department_name: { 
         type: String,
     },
     tenure_duration: {
@@ -51,6 +59,24 @@ var contractSchema = new mongoose.Schema({
     },
     referrer_id: {
         type: String,
+        validate: {
+            validator: function (v, callback) {
+
+                return new Promise(function (resolve, reject) {
+
+                    EmpolyeeModel.find({ employee_id_number: v }, function (err, res) {
+
+                        if (res === []) {
+                            resolve(true)
+                        } else {
+                            resolve(false)
+                        }
+                    })
+                })
+            },
+            message: ref => `Referrer ID: '${ref.value}' can not be found`
+        },
+        required: [true, "Referrer ID is required"]
     },
     hr_name: {
         type: String
