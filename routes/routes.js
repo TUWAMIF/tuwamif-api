@@ -33,7 +33,7 @@ router.post('/submit_form', async (req, res) => {
 
     newContract.save((err, result) => {
         if (!err) {
-            console.log("Contract saved to the database succesfully");
+            console.log("ERROR", err);
         } else {
 
             res.status(400).send(err)
@@ -550,6 +550,10 @@ router.post('/submit_form', async (req, res) => {
                             console.log(error);
                         } else {
                             console.log('Email sent: ' + info.response);
+
+                            //response to the frontend
+                            res.status(200).send("Contract Added Succesfully")
+
                             fs.unlink(`./${contract}`, (err) => {
                                 if (err) {
                                     console.error(err)
@@ -582,10 +586,11 @@ router.post('/submit_propose', (req, res) => {
     proposeModel.save((err, result) => {
         if (err) {
             console.log(err)
+            res.status(400).send("Error!!!!:::::::::", err.message)
         } else {
             console.log(result)
 
-            res.status(200).send("Succesfully Added")
+            res.status(200).send("Propose Succesfully Added");
         }
     })
 
@@ -625,7 +630,7 @@ router.post('/employee', upload.single('fileimage'), function (req, res) {
         }
 
         console.log(ress)
-        res.status(200).send("succuesfully")
+        res.status(200).send("Employee Succuesfully Added");
     })
 
 })
