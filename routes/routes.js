@@ -633,7 +633,7 @@ router.get('/deleteContract/:id', (req, res) => {
 router.get('/deleteAllContracts', (req, res) => {
 
 
-    ContractModel.findByIdAndRemove({}, (err, result) => {
+    ContractModel.deleteMany({}, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
