@@ -18,6 +18,10 @@ var contractSchema = new mongoose.Schema({
         type: String,
         required: [true, "Last name is required"]
     },
+    contract_number: {
+        type: String,
+        required: [true, "Contract Number is required"]
+    },
     gender: {
         type: String,
 
@@ -51,7 +55,7 @@ var contractSchema = new mongoose.Schema({
     organization: {
         type: String,
     },
-    department_name: { 
+    department_name: {
         type: String,
     },
     tenure_duration: {

@@ -570,6 +570,49 @@ router.post('/submit_form', async (req, res) => {
     }
 })
 
+router.get('/contracts', (req, res) => {
+
+    ContractModel.find({}, (err, res) => {
+
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send(res);
+        }
+
+    })
+})
+
+router.get('/contract/:contract_number', (req, res) => {
+
+    contract_number = req.params.contract_number
+
+    ContractModel.find({ contract_number }, (err, res) => {
+
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send(res);
+        }
+
+    })
+})
+
+router.get('/contract/:lastname', (req, res) => {
+
+    lastname = req.params.lastname
+
+    ContractModel.find({ lastname }, (err, res) => {
+
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send(res);
+        }
+
+    })
+})
+
 router.post('/submit_propose', (req, res) => {
 
     var data = {
