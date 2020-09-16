@@ -613,6 +613,23 @@ router.get('/contract/:lastname', (req, res) => {
     })
 })
 
+router.get('/deleteContract/:contract_number', (req, res) => {
+
+    contract_number = req.params.contract_number
+
+    ContractModel.findByIdAndRemove({ contract_number }, (err, res) => {
+
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send("Succesfully Deleted.");
+        }
+
+    })
+
+
+})
+
 router.post('/submit_propose', (req, res) => {
 
     var data = {
