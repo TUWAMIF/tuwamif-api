@@ -613,11 +613,11 @@ router.get('/contract/:lastname', (req, res) => {
     })
 })
 
-router.get('/deleteContract/:contract_number', (req, res) => {
+router.get('/deleteContract/:id', (req, res) => {
 
-    contract_number = req.params.contract_number
+    _id = req.params.id
 
-    ContractModel.findByIdAndRemove({ contract_number }, (err, result) => {
+    ContractModel.findByIdAndRemove({ _id }, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
