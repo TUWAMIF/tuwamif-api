@@ -572,12 +572,12 @@ router.post('/submit_form', async (req, res) => {
 
 router.get('/contracts', (req, res) => {
 
-    ContractModel.find({}, (err, res) => {
+    ContractModel.find({}, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
         } else {
-            res.status(200).send(res);
+            res.status(200).send(result);
         }
 
     })
@@ -587,12 +587,12 @@ router.get('/contract/:contract_number', (req, res) => {
 
     contract_number = req.params.contract_number
 
-    ContractModel.find({ contract_number }, (err, res) => {
+    ContractModel.find({ contract_number }, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
         } else {
-            res.status(200).send(res);
+            res.status(200).send(result);
         }
 
     })
@@ -602,12 +602,12 @@ router.get('/contract/:lastname', (req, res) => {
 
     lastname = req.params.lastname
 
-    ContractModel.find({ lastname }, (err, res) => {
+    ContractModel.find({ lastname }, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
         } else {
-            res.status(200).send(res);
+            res.status(200).send(result);
         }
 
     })
@@ -617,7 +617,7 @@ router.get('/deleteContract/:contract_number', (req, res) => {
 
     contract_number = req.params.contract_number
 
-    ContractModel.findByIdAndRemove({ contract_number }, (err, res) => {
+    ContractModel.findByIdAndRemove({ contract_number }, (err, result) => {
 
         if (err) {
             res.status(400).send(err);
